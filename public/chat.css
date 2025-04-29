@@ -1,76 +1,185 @@
-*{
+/* Resetting default styles */
+* {
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     box-sizing: border-box;
 }
-::placeholder{
-    color: #000;
+
+::placeholder {
+    color: #aaa;
 }
-.nav{
-    position: absolute;
+
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     background: #fafafa;
     width: 100%;
-    box-shadow: 0 .2rem .2rem rgba(0,0,0,0.1);
+    box-shadow: 0 .2rem .2rem rgba(0, 0, 0, 0.1);
+    padding: 10px 15px;
+    z-index: 10;
 }
-.nav-profile{
+
+.nav-profile {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
-.nav-profile .nav-left{
+
+.nav-profile .nav-left {
     font-size: 23px;
-    margin: 10px;
+    margin-right: 15px;
     color: #000;
     cursor: pointer;
 }
-.nav-profile-box-img{
-    width: 50px;
+
+.nav-profile-box-img {
+    width: 40px;
+    height: 40px;
 }
-.nav-profile-box-img img{
+
+.nav-profile-box-img img {
     width: 100%;
-    margin: 10px;
+    height: 100%;
     border-radius: 50%;
 }
-.nav-profile-box-text{
-    margin: 15px;
+
+.nav-profile-box-text {
+    margin-left: 15px;
 }
-.chatbox{
+
+.nav-profile-box-text h4 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Chatbox Styles */
+.chatbox {
     width: 100%;
     height: 100vh;
-    background: #f0f0f0;
+    background: #f7f7f7;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    padding-top: 70px; /* Space for fixed navbar */
 }
-.chatbox .chatbox-box{
+
+.chatbox-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    padding-bottom: 80px; /* Space for input area */
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.my-msg,
+.their-msg {
+    padding: 10px 15px;
+    max-width: 75%;
+    border-radius: 15px;
+    line-height: 1.4;
+    font-size: 16px;
+    word-wrap: break-word;
+}
+
+.my-msg {
+    background-color: #4CAF50;
+    color: white;
+    align-self: flex-end;
+}
+
+.their-msg {
+    background-color: #e0e0e0;
+    color: black;
+    align-self: flex-start;
+}
+
+/* Chat Input Styles */
+.chatbox-input {
     position: fixed;
     bottom: 0;
-    background: #fafafa;
-    width: 100%;
-    box-shadow: 0 .2rem .3rem rgba(0,0,0,0.50);
-}
-.chatbox-box .chatbox-box-content{
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 10px 15px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin: 10px;
+    box-shadow: 0 .2rem .3rem rgba(0, 0, 0, 0.1);
+    z-index: 5;
 }
-.chatbox-box-content .chatbox-box-input{
-    width: 100%;
-    margin: .5rem;
-}
-.chatbox-box-content .chatbox-box-input input{
-    width: 100%;
-    height: 53px;
-    margin: .5rem;
+
+.chatbox-input input {
+    width: 85%;
+    height: 40px;
     padding: 10px;
-    font-size: 15px;
-    outline: 0; 
-    border: 1px solid #0000001a;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+}
+
+.chatbox-input .send-btn {
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    padding: 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+}
+
+.chatbox-input .send-btn:hover {
+    background-color: #45a049;
+}
+
+/* Scrollbar customization */
+.chatbox-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chatbox-content::-webkit-scrollbar-thumb {
+    background: #888;
     border-radius: 10px;
 }
-.chatbox-box-content .chatbox-box-icon i{
-    font-size: 25px;
-    margin-left: 10px; cursor: pointer;
+
+.chatbox-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .nav-profile .nav-left {
+        font-size: 18px;
+    }
+    .nav-profile-box-img {
+        width: 35px;
+        height: 35px;
+    }
+    .nav-profile-box-text h4 {
+        font-size: 16px;
+    }
+
+    .chatbox-input input {
+        font-size: 14px;
+    }
+
+    .chatbox-input .send-btn {
+        font-size: 16px;
+        padding: 10px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .my-msg, .their-msg {
+        font-size: 14px;
+    }
 }

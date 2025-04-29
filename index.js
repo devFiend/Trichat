@@ -194,18 +194,37 @@ app.get('/me', (req, res) => {
 });  
 
   
-// Socket.io
+// 🔌 Socket.io Setup with Debug Logs
 io.on('connection', (socket) => {
-  console.log('User connected');
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
+    console.log('🟢 New user connected:', socket.id);
+  
+    // Listen for custom 'sendMessage' events from frontend
+    socket.on('sendMessage', async (data) => {
+      const { senderId, receiverId, message } = data;
+      console.log('📨 Message received from client:', data);
+  
+      try {
+        // Save to database
+        const result = await pool.query(
+          'INSERT INTO chats (sender_id, receiver_id, message) VALUES ($1, $2, $3) RETURNING *',
+          [senderId, receiverId, message]
+        );
+        const savedMessage = result.rows[0];
+        console.log('💾 Message saved to DB:', savedMessage);
+  
+        // Emit to all connected clients (for now)
+        io.emit('receiveMessage', savedMessage);
+        console.log('📡 Broadcasted message to clients');
+  
+      } catch (err) {
+        console.error('❌ Error handling sendMessage:', err);
+      }
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('🔴 User disconnected:', socket.id);
+    });
+  });  
 
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
