@@ -1,0 +1,76 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+::placeholder{
+    color: #000;
+}
+.nav{
+    position: absolute;
+    background: #fafafa;
+    width: 100%;
+    box-shadow: 0 .2rem .2rem rgba(0,0,0,0.1);
+}
+.nav-profile{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-profile .nav-left{
+    font-size: 23px;
+    margin: 10px;
+    color: #000;
+    cursor: pointer;
+}
+.nav-profile-box-img{
+    width: 50px;
+}
+.nav-profile-box-img img{
+    width: 100%;
+    margin: 10px;
+    border-radius: 50%;
+}
+.nav-profile-box-text{
+    margin: 15px;
+}
+.chatbox{
+    width: 100%;
+    height: 100vh;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chatbox .chatbox-box{
+    position: fixed;
+    bottom: 0;
+    background: #fafafa;
+    width: 100%;
+    box-shadow: 0 .2rem .3rem rgba(0,0,0,0.50);
+}
+.chatbox-box .chatbox-box-content{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+}
+.chatbox-box-content .chatbox-box-input{
+    width: 100%;
+    margin: .5rem;
+}
+.chatbox-box-content .chatbox-box-input input{
+    width: 100%;
+    height: 53px;
+    margin: .5rem;
+    padding: 10px;
+    font-size: 15px;
+    outline: 0; 
+    border: 1px solid #0000001a;
+    border-radius: 10px;
+}
+.chatbox-box-content .chatbox-box-icon i{
+    font-size: 25px;
+    margin-left: 10px; cursor: pointer;
+}
