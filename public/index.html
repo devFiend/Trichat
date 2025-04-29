@@ -10,23 +10,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
-
     <header class="header">
-
         <div class="nav" id="nav">
-
             <div class="nav-text">
                 <a href="#" class="nav-link"><h2>Tri<span>Chat</span></h2></a>
                 <i class="fa fa-close" id="close-bar"></i>
             </div>
-
             <ul class="navbar">
                 <li class="navbar-itmes"><a href="#" class="navbar-link active"><i class="fa-solid fa-comment"></i>Chat</a></li>
                 <li class="navbar-itmes"><a href="#" class="navbar-link"><i class="fa-solid fa-user"></i>Profile</a></li>
                 <li class="navbar-itmes"><a href="#" class="navbar-link"><i class="fa-solid fa-gear"></i>Setting</a></li>
             </ul>
-
             <div class="navbar-box-btn">
                 <button class="navbar-btn"><i class="fa-solid fa-right-from-bracket"></i>Log Out</button>
             </div>
@@ -47,106 +41,38 @@
 
         <div class="chat">
             <div class="chat-content">
-                <div class="chat-box">
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-    
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-    
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-    
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-    
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-
-                    <div class="chat-box-content">
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>Treasure</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    </div>
-                </div>
+                <div class="chat-box" id="chatBox"></div> <!-- Container for user chats -->
             </div>
         </div>
     </section>
+
+    <script>
+        // Fetch users from backend
+        fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                const chatBox = document.getElementById('chatBox');
+                data.forEach(user => {
+                    const chatItem = document.createElement('div');
+                    chatItem.classList.add('chat-box-content');
+                    chatItem.innerHTML = `
+                        <div class="chat-box-content-img">
+                            <img src="testimonial-1.jpg" alt="${user.name}">
+                        </div>
+                        <div class="chat-boc-content-text">
+                            <h1>${user.name}</h1>
+                        </div>
+                        <div class="chat-box-content-icon">
+                            <i class="fa fa-add"></i>
+                        </div>
+                    `;
+                    chatBox.appendChild(chatItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+            });
+    </script>
 
     <script src="script.js"></script>
 </body>
