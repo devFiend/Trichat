@@ -47,32 +47,60 @@
     </section>
 
     <script>
-        // Fetch users from backend
+        const chatBox = document.getElementById('chatBox');
+        const searchInput = document.querySelector('.search');
+        let allUsers = [];
+    
+        // Fetch all users when page loads
         fetch('/users')
             .then(response => response.json())
             .then(data => {
-                const chatBox = document.getElementById('chatBox');
-                data.forEach(user => {
-                    const chatItem = document.createElement('div');
-                    chatItem.classList.add('chat-box-content');
-                    chatItem.innerHTML = `
-                        <div class="chat-box-content-img">
-                            <img src="testimonial-1.jpg" alt="${user.name}">
-                        </div>
-                        <div class="chat-boc-content-text">
-                            <h1>${user.name}</h1>
-                        </div>
-                        <div class="chat-box-content-icon">
-                            <i class="fa fa-add"></i>
-                        </div>
-                    `;
-                    chatBox.appendChild(chatItem);
-                });
+                allUsers = data;
+                renderUsers(allUsers);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    </script>
+    
+        // Render a list of users in the chat box
+        function renderUsers(users) {
+            chatBox.innerHTML = ''; // Clear existing
+            if (users.length === 0) {
+                chatBox.innerHTML = '<p style="padding: 10px;">No users found</p>';
+                return;
+            }
+    
+            users.forEach(user => {
+                const chatItem = document.createElement('div');
+                chatItem.classList.add('chat-box-content');
+                chatItem.innerHTML = `
+                    <div class="chat-box-content-img">
+                        <img src="testimonial-1.jpg" alt="${user.name}">
+                    </div>
+                    <div class="chat-boc-content-text">
+                        <h1>${user.name}</h1>
+                    </div>
+                    <div class="chat-box-content-icon">
+                        <i class="fa fa-add"></i>
+                    </div>
+                `;
+
+                chatItem.addEventListener('click', () => {
+        window.location.href = `chat.html?userId=${user.id}&name=${encodeURIComponent(user.name)}`;
+    });
+                chatBox.appendChild(chatItem);
+            });
+        }
+    
+        // Search filter logic
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const filteredUsers = allUsers.filter(user =>
+                user.name.toLowerCase().includes(query)
+            );
+            renderUsers(filteredUsers);
+        });
+    </script>    
 
     <script src="script.js"></script>
 </body>

@@ -37,14 +37,14 @@ app.use(session({
 // ✅ Protect / and /index.html manually
 app.get('/', (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/signup.html');
+    return res.redirect('/login.html');
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/index.html', (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/signup.html');
+    return res.redirect('/login.html');
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -129,15 +129,71 @@ app.get('/users', async (req, res) => {
       return res.status(401).json({ error: 'Not logged in' });
     }
   
+    const search = req.query.search || ''; // from ?search=john
+  
     try {
-      const result = await pool.query('SELECT * FROM users WHERE id != $1', [req.session.user.id]);
-      res.json(result.rows);  // Send list of users excluding the logged-in user
+      const result = await pool.query(
+        'SELECT * FROM users WHERE id != $1 AND LOWER(name) LIKE $2',
+        [req.session.user.id, `%${search.toLowerCase()}%`]
+      );
+      res.json(result.rows);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Error fetching users' });
     }
+  });
+
+  // Messages Route
+  app.post('/messages', async (req, res) => {
+    const { senderId, receiverId, message } = req.body;
+
+    try {
+        await pool.query(
+            'INSERT INTO chats (sender_id, receiver_id, message) VALUES ($1, $2, $3)',
+            [senderId, receiverId, message]
+        );
+        res.status(201).json({ message: 'Message sent' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error sending message' });
+    }
+});
+
+// GET /messages/:userId route
+app.get('/messages/:userId', async (req, res) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Not logged in' });
+    }
+  
+    const currentUserId = req.session.user.id;
+    const otherUserId = req.params.userId;
+  
+    try {
+      const result = await pool.query(`
+        SELECT * FROM chats 
+        WHERE (sender_id = $1 AND receiver_id = $2) 
+           OR (sender_id = $2 AND receiver_id = $1)
+        ORDER BY created_at ASC
+      `, [currentUserId, otherUserId]);
+  
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error fetching messages' });
+    }
   });  
 
+// GET /me route
+// This route returns the logged-in user's information
+// GET /me route
+app.get('/me', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Not logged in' });  // Make sure user session exists
+    }
+    res.json({ userId: req.session.user.id });  // Send user info back to the frontend
+});  
+
+  
 // Socket.io
 io.on('connection', (socket) => {
   console.log('User connected');
