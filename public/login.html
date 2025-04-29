@@ -15,19 +15,21 @@
             </div>
             <form action="/login" method="POST">
                 <div class="login-box-form">
-                    <div class="login-from-input">
-                        <input type="password" class="password" id="password" placeholder="Password" required>
-                    </div>
-                    
-                    <div class="login-from-input">
-                        <input type="email" class="email" id="email" placeholder="Email" required>
-                    </div>
+                  <div class="login-from-input">
+                    <input type="email" name="email" id="email" placeholder="Email" required>
+                  </div>
+              
+                  <div class="login-from-input">
+                    <input type="password" name="password" id="password" placeholder="Password" required>
+                  </div>
                 </div>
-               <button class="login-btn">Log In</button>
+              
+                <button type="submit" class="login-btn">Log In</button>
+              
                 <div class="link">
-                    <p>Don't have an account?<a href="signup.html" class="login-link">Sign Up</a></p>
+                  <p>Don't have an account? <a href="signup.html" class="login-link">Sign Up</a></p>
                 </div>
-            </form>
+              </form>              
         </div>
     </section>
 </body>

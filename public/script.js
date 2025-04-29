@@ -9,3 +9,8 @@ menuBar.addEventListener('click', () => {
 closeBar.addEventListener('click', () => {
     nav.classList.remove('add');
 });
+
+// Add event listeners to the logout buttons
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    window.location.href = '/logout';
+  });

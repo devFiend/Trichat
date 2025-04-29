@@ -75,6 +75,53 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// POST /login route
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    console.log("🟡 Incoming email:", email);
+    console.log("🟡 Incoming password:", password);
+  
+    try {
+      const query = 'SELECT * FROM users WHERE LOWER(email) = LOWER($1)';
+      console.log("🔵 Running query:", query, "with", email);
+  
+      const result = await pool.query(query, [email]);
+      console.log("🟢 Query result rows:", result.rows);
+  
+      if (result.rows.length === 0) {
+        return res.status(401).send('Invalid email or password (user not found)');
+      }
+  
+      const user = result.rows[0];
+      const match = await bcrypt.compare(password, user.password);
+  
+      if (!match) {
+        return res.status(401).send('Invalid email or password (password mismatch)');
+      }
+  
+      req.session.user = user;
+      res.redirect('/');
+      
+    } catch (err) {
+      console.error('🔴 Login error:', err);
+      res.status(500).send('Internal server error');
+    }
+  });
+    
+  
+
+// 🔓 Logout Route
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).send('Logout failed');
+      }
+      res.redirect('/login.html'); // Redirect to signup or login page
+    });
+  });
+  
+
 // Users Route
 
 app.get('/users', async (req, res) => {
