@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account Settings</title>
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="profile-container">
+
+    <!-- Edit Profile Form -->
+    <form class="edit-form" action="/profile/edit" method="POST">
+      <h3>Edit Profile</h3>
+      <input type="text" name="name" placeholder="Full Name" value="<%= user.name %>" required />
+      <input type="email" name="email" placeholder="Email" value="<%= user.email %>" required />
+      <button type="submit" class="btn">Save Changes</button>
+    </form>
+
+    <!-- Change Password Form -->
+    <form class="edit-form" action="/profile/change-password" method="POST">
+      <h3>Change Password</h3>
+      <input type="password" name="currentPassword" placeholder="Current Password" required />
+      <input type="password" name="newPassword" placeholder="New Password" required />
+      <input type="password" name="confirmPassword" placeholder="Confirm New Password" required />
+      <button type="submit" class="btn">Update Password</button>
+    </form>
+
+  </div>
+</body>
+</html>

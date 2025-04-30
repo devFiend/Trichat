@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile</title>
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="profile-container">
+    <div class="profile-card">
+      <form action="/profile/photo" method="POST" enctype="multipart/form-data">
+        <label for="avatarUpload">
+            <img class="profile-avatar" src="<%= user.avatar ? '/uploads/' + user.avatar : '/images/default-avatar.jpg' %>" alt="Profile Picture" />
+        </label>
+        <input type="file" id="avatarUpload" name="avatar" onchange="this.form.submit()" hidden />
+      </form>
+
+      <h2><%= user.name %></h2>
+      <p>Email: <%= user.email %></p>
+
+      <div class="profile-actions">
+        <a href="/settings" class="btn">Edit Profile</a>
+        <a href="/settings" class="btn">Change Password</a>
+        <a href="/logout" class="btn logout">Logout</a>
+      </div>      
+    </div>
+
+  </div>
+</body>
+</html>

@@ -7,13 +7,14 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
+import multer from 'multer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
+const upload = multer({ dest: 'public/uploads/' });
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL DB setup
@@ -26,7 +27,10 @@ const pool = new Pool({
 });
 
 // Middlewares
+app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
+app.use('/images', express.static('public/images'));
 app.use(express.json());
 app.use(session({
   secret: 'mysecretkey',
@@ -99,7 +103,12 @@ app.post('/login', async (req, res) => {
         return res.status(401).send('Invalid email or password (password mismatch)');
       }
   
-      req.session.user = user;
+      req.session.user = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar || '/images/default-avatar.jpg'  // fallback to default image
+      };      
       res.redirect('/');
       
     } catch (err) {
@@ -142,6 +151,16 @@ app.get('/users', async (req, res) => {
       res.status(500).json({ error: 'Error fetching users' });
     }
   });
+
+  // Profile Route
+  app.get('/profile', (req, res) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+  
+    res.render('profile', { user: req.session.user });
+  });
+  
 
   // Messages Route
   app.post('/messages', async (req, res) => {
@@ -193,6 +212,68 @@ app.get('/me', (req, res) => {
     res.json({ userId: req.session.user.id });  // Send user info back to the frontend
 });  
 
+// Settings Route
+app.get('/settings', async (req, res) => {
+    const userId = req.session.userId; // or however you're storing the logged-in user
+    if (!userId) return res.redirect('/login');
+  
+    const result = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+    const user = result.rows[0];
+  
+    res.render('settings', { user });
+  });  
+
+
+// Upload photo
+app.post('/profile/photo', upload.single('avatar'), async (req, res) => {
+    const filename = req.file.filename;
+    const avatarPath = `/uploads/${filename}`;
+    const userId = req.session.user.id;
+
+    // Save to DB
+    pool.query('UPDATE users SET avatar = $1 WHERE id = $2', [filename, userId]);
+
+    // Update session
+    req.session.user.avatar = avatarPath;
+
+    res.redirect('/profile');
+});
+  
+  // Edit profile
+  app.post('/profile/edit', async (req, res) => {
+    const { name, email } = req.body;
+    const userId = req.session.user.id;
+
+    await pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [name, email, userId]);
+    // Update session too
+    req.session.user.name = name;
+    req.session.user.email = email;
+
+    res.redirect('/profile');
+});
+  
+  // Change password
+  app.post('/profile/change-password', async (req, res) => {
+      const { currentPassword, newPassword, confirmPassword } = req.body;
+      const userId = req.session.user.id;
+  
+      if (newPassword !== confirmPassword) {
+          return res.send('Passwords do not match');
+      }
+  
+      const result = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
+      const hashedPassword = result.rows[0].password;
+  
+      const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
+      if (!isMatch) {
+          return res.send('Incorrect current password');
+      }
+  
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+      await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHashedPassword, userId]);
+  
+      res.send('Password changed successfully');
+  });  
   
 // 🔌 Socket.io Setup with Debug Logs
 io.on('connection', (socket) => {
