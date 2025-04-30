@@ -11,7 +11,8 @@
     <div class="profile-card">
       <form action="/profile/photo" method="POST" enctype="multipart/form-data">
         <label for="avatarUpload">
-            <img class="profile-avatar" src="<%= user.avatar ? '/uploads/' + user.avatar : '/images/default-avatar.jpg' %>" alt="Profile Picture" />
+            <% let avatarPath = user.avatar && !user.avatar.startsWith('/images/') ? '/uploads/' + user.avatar : (user.avatar || '/images/default-avatar.jpg'); %>
+<img class="profile-avatar" src="<%= avatarPath %>" alt="Profile Picture" />
         </label>
         <input type="file" id="avatarUpload" name="avatar" onchange="this.form.submit()" hidden />
       </form>

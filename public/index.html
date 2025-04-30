@@ -63,38 +63,38 @@
             });
         
         // Render a list of users in the chat box
-        function renderUsers(users) {
-            chatBox.innerHTML = ''; // Clear existing
-            if (users.length === 0) {
-                chatBox.innerHTML = '<p style="padding: 10px;">No users found</p>';
-                return;
-            }
+function renderUsers(users) {
+    chatBox.innerHTML = ''; // Clear existing
+    if (users.length === 0) {
+        chatBox.innerHTML = '<p style="padding: 10px;">No users found</p>';
+        return;
+    }
+
+    users.forEach(user => {
+        const chatItem = document.createElement('div');
+        chatItem.classList.add('chat-box-content');
         
-            users.forEach(user => {
-                const chatItem = document.createElement('div');
-                chatItem.classList.add('chat-box-content');
-                
-                // Check if the user has a profile picture, otherwise use default
-                const avatarSrc = user.avatar ? user.avatar : 'images/default-avatar.jpg'; // Replace with your default image path
-                
-                chatItem.innerHTML = `
-                    <div class="chat-box-content-img">
-                        <img src="${avatarSrc}" alt="${user.name}">
-                    </div>
-                    <div class="chat-boc-content-text">
-                        <h1>${user.name}</h1>
-                    </div>
-                    <div class="chat-box-content-icon">
-                        <i class="fa fa-add"></i>
-                    </div>
-                `;
-    
-                chatItem.addEventListener('click', () => {
-                    window.location.href = `chat.html?userId=${user.id}&name=${encodeURIComponent(user.name)}`;
-                });
-                chatBox.appendChild(chatItem);
-            });
-        }
+        // Check if the user has a profile picture, otherwise use the default
+        const avatarSrc = user.avatar ? `/uploads/${user.avatar}` : 'images/default-avatar.jpg'; // Updated to include /uploads/
+
+        chatItem.innerHTML = `
+            <div class="chat-box-content-img">
+                <img src="${avatarSrc}" alt="${user.name}">
+            </div>
+            <div class="chat-boc-content-text">
+                <h1>${user.name}</h1>
+            </div>
+            <div class="chat-box-content-icon">
+                <i class="fa fa-add"></i>
+            </div>
+        `;
+
+        chatItem.addEventListener('click', () => {
+            window.location.href = `chat.html?userId=${user.id}&name=${encodeURIComponent(user.name)}`;
+        });
+        chatBox.appendChild(chatItem);
+    });
+}
         
         // Search filter logic
         searchInput.addEventListener('input', () => {
