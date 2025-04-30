@@ -214,15 +214,19 @@ app.get('/me', (req, res) => {
 
 // Settings Route
 app.get('/settings', async (req, res) => {
-    const userId = req.session.userId; // or however you're storing the logged-in user
-    if (!userId) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/login.html');
   
-    const result = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
-    const user = result.rows[0];
+    const userId = req.session.user.id;
   
-    res.render('settings', { user });
+    try {
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+      const user = result.rows[0];
+      res.render('settings', { user });
+    } catch (err) {
+      console.error('Error fetching user settings:', err);
+      res.status(500).send('Internal server error');
+    }
   });  
-
 
 // Upload photo
 app.post('/profile/photo', upload.single('avatar'), async (req, res) => {

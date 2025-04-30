@@ -50,7 +50,7 @@
         const chatBox = document.getElementById('chatBox');
         const searchInput = document.querySelector('.search');
         let allUsers = [];
-    
+        
         // Fetch all users when page loads
         fetch('/users')
             .then(response => response.json())
@@ -61,7 +61,7 @@
             .catch(error => {
                 console.error('Error fetching users:', error);
             });
-    
+        
         // Render a list of users in the chat box
         function renderUsers(users) {
             chatBox.innerHTML = ''; // Clear existing
@@ -69,13 +69,17 @@
                 chatBox.innerHTML = '<p style="padding: 10px;">No users found</p>';
                 return;
             }
-    
+        
             users.forEach(user => {
                 const chatItem = document.createElement('div');
                 chatItem.classList.add('chat-box-content');
+                
+                // Check if the user has a profile picture, otherwise use default
+                const avatarSrc = user.avatar ? user.avatar : 'images/default-avatar.jpg'; // Replace with your default image path
+                
                 chatItem.innerHTML = `
                     <div class="chat-box-content-img">
-                        <img src="testimonial-1.jpg" alt="${user.name}">
+                        <img src="${avatarSrc}" alt="${user.name}">
                     </div>
                     <div class="chat-boc-content-text">
                         <h1>${user.name}</h1>
@@ -84,14 +88,14 @@
                         <i class="fa fa-add"></i>
                     </div>
                 `;
-
+    
                 chatItem.addEventListener('click', () => {
-        window.location.href = `chat.html?userId=${user.id}&name=${encodeURIComponent(user.name)}`;
-    });
+                    window.location.href = `chat.html?userId=${user.id}&name=${encodeURIComponent(user.name)}`;
+                });
                 chatBox.appendChild(chatItem);
             });
         }
-    
+        
         // Search filter logic
         searchInput.addEventListener('input', () => {
             const query = searchInput.value.toLowerCase();
@@ -100,7 +104,8 @@
             );
             renderUsers(filteredUsers);
         });
-    </script>    
+    </script>
+     
 
     <script src="script.js"></script>
 </body>
