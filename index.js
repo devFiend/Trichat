@@ -8,6 +8,8 @@ import { dirname } from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 import multer from 'multer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,12 +20,19 @@ const upload = multer({ dest: 'public/uploads/' });
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL DB setup
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'trichat',
+//   password: '490923Ma51.',
+//   port: 5432,
+// });
+
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'trichat',
-  password: '490923Ma51.',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL, // Use the DATABASE_URL environment variable
+  ssl: {
+    rejectUnauthorized: false, // Allow for SSL connection (necessary for Railway)
+  },
 });
 
 // Middlewares
