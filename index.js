@@ -76,6 +76,9 @@ app.post('/signup', async (req, res) => {
   const { name, number, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
+    if (!name || !number || !email || !password) {
+      return res.status(400).send('All fields are required');
+    }
     const result = await pool.query(
       'INSERT INTO users(name, number, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, number, email, hashedPassword]
@@ -83,51 +86,48 @@ app.post('/signup', async (req, res) => {
     req.session.user = result.rows[0];
     res.redirect('/');
   } catch (err) {
-    console.error(err);
+    console.error('Signup Error:', err); // Log detailed error
+    if (err.code === '23505') { // Unique constraint violation (email already exists)
+      return res.status(400).send('Email already in use');
+    }
     res.status(500).send('Signup failed');
   }
 });
 
 // POST /login route
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    console.log("🟡 Incoming email:", email);
-    console.log("🟡 Incoming password:", password);
-  
-    try {
-      const query = 'SELECT * FROM users WHERE LOWER(email) = LOWER($1)';
-      console.log("🔵 Running query:", query, "with", email);
-  
-      const result = await pool.query(query, [email]);
-      console.log("🟢 Query result rows:", result.rows);
-  
-      if (result.rows.length === 0) {
-        return res.status(401).send('Invalid email or password (user not found)');
-      }
-  
-      const user = result.rows[0];
-      const match = await bcrypt.compare(password, user.password);
-  
-      if (!match) {
-        return res.status(401).send('Invalid email or password (password mismatch)');
-      }
-  
-      req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar || '/images/default-avatar.jpg'  // fallback to default image
-      };      
-      res.redirect('/');
-      
-    } catch (err) {
-      console.error('🔴 Login error:', err);
-      res.status(500).send('Internal server error');
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res.status(400).send('Email and password are required');
     }
-  });
-    
-  
+    const query = 'SELECT * FROM users WHERE LOWER(email) = LOWER($1)';
+    const result = await pool.query(query, [email]);
 
+    if (result.rows.length === 0) {
+      return res.status(401).send('Invalid email or password');
+    }
+
+    const user = result.rows[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(401).send('Invalid email or password');
+    }
+
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar || '/images/default-avatar.jpg',
+    };
+    res.redirect('/');
+  } catch (err) {
+    console.error('Login Error:', err); // Log detailed error
+    res.status(500).send('Internal server error');
+  }
+});
+ 
 // 🔓 Logout Route
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
